@@ -8,6 +8,9 @@
 //////////////
 #include <windows.h>
 #include "d3d.h"
+#include "camera.h"
+#include "model.h"
+#include "myShader.h"
 
 /////////////
 // GLOBALS //
@@ -34,8 +37,10 @@ public:
 private:
 	bool Render();
 
-private:
 	D3DClass* m_Direct3D;
+	Camera* m_Camera;
+	Model* m_Model;
+	MyShader* m_ColorShader;
 };
 
 #endif
