@@ -26,11 +26,10 @@ private:
 	void InitializeWindows(int&, int&);
 	void ShutdownWindows();
 
-private:
+	uint8_t controlMode = 49;
 	LPCWSTR m_applicationName;
 	HINSTANCE m_hinstance;
 	HWND m_hwnd;
-
 	InputClass* m_Input;
 	GraphicsClass* m_Graphics;
 };

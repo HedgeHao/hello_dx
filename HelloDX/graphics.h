@@ -23,11 +23,12 @@ public:
   void Shutdown();
   bool Frame();
 
+  Camera *m_Camera;
+
 private:
   bool Render();
 
   D3DClass *m_Direct3D;
-  Camera *m_Camera;
   Model *m_Model;
   MyShader *m_ColorShader;
 };

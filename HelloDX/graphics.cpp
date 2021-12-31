@@ -7,7 +7,7 @@ GraphicsClass::GraphicsClass() {
   m_ColorShader = 0;
 }
 
-GraphicsClass::GraphicsClass(const GraphicsClass& other) {}
+GraphicsClass::GraphicsClass(const GraphicsClass &other) {}
 
 GraphicsClass::~GraphicsClass() {}
 
@@ -38,7 +38,7 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
   m_Camera->SetPosition(0.0f, 0.0f, -2.0f);
 
   // Set the initial rotation of the camera.
-  m_Camera->SetRotation(0.0f, 0.0f, 45.0f);
+  m_Camera->SetRotation(0.0f, 0.0f, 0.0f);
 
   // Create the model object.
   m_Model = new Model;
@@ -127,6 +127,13 @@ bool GraphicsClass::Render() {
   m_Direct3D->GetWorldMatrix(worldMatrix);
   m_Camera->GetViewMatrix(viewMatrix);
   m_Direct3D->GetProjectionMatrix(projectionMatrix);
+
+  // XMFLOAT4X4 fView;
+  // XMStoreFloat4x4(&fView, projectionMatrix);
+  // float fView_11 = fView._11;
+  // char debug[10];
+  // sprintf_s(debug, "%.2f\n", fView_11);
+  // OutputDebugStringA(debug);
 
   // Put the model vertex and index buffers on the graphics pipeline to prepare
   // them for drawing.

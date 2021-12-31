@@ -13,6 +13,8 @@ public:
 
   void SetPosition(float, float, float);
   void SetRotation(float, float, float);
+  void Move(float, float, float);
+  void Rotate(float, float, float);
 
   XMFLOAT3 GetPosition();
   XMFLOAT3 GetRotation();
