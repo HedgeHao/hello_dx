@@ -48,6 +48,21 @@
     <ClInclude Include="modelAxis.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="modelSkeleton.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LIPSBodyPose.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LIPSBodyPoseTypes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LIPSBodyPoseDataStruct.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LIPSBodyPoseRender.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloDX.cpp">

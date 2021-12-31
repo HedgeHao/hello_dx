@@ -1,34 +1,33 @@
 #include "system_class.h"
+
 #include <stdio.h>
 
 char debugMsg[256];
-void log() {
-  OutputDebugStringA(debugMsg);
-}
+void log() { OutputDebugStringA(debugMsg); }
 
 SystemClass::SystemClass() {
   m_Input = 0;
   m_Graphics = 0;
 }
 
-SystemClass::SystemClass(const SystemClass &other) {
-}
+SystemClass::SystemClass(const SystemClass &other) {}
 
-SystemClass::~SystemClass() {
-}
+SystemClass::~SystemClass() {}
 
 bool SystemClass::Initialize() {
   int screenWidth, screenHeight;
   bool result;
 
-  // Initialize the width and height of the screen to zero before sending the variables into the function.
+  // Initialize the width and height of the screen to zero before sending the
+  // variables into the function.
   screenWidth = 0;
   screenHeight = 0;
 
   // Initialize the windows api.
   InitializeWindows(screenWidth, screenHeight);
 
-  // Create the input object.  This object will be used to handle reading the keyboard input from the user.
+  // Create the input object.  This object will be used to handle reading the
+  // keyboard input from the user.
   m_Input = new InputClass;
   if (!m_Input) {
     return false;
@@ -37,7 +36,8 @@ bool SystemClass::Initialize() {
   // Initialize the input object.
   m_Input->Initialize();
 
-  // Create the graphics object.  This object will handle rendering all the graphics for this application.
+  // Create the graphics object.  This object will handle rendering all the
+  // graphics for this application.
   m_Graphics = new GraphicsClass;
   if (!m_Graphics) {
     return false;
@@ -48,6 +48,11 @@ bool SystemClass::Initialize() {
   if (!result) {
     return false;
   }
+
+#ifdef LIPS_SKELETON
+  mPoseEngine =
+      std::make_shared<lips::LIPSBodyPose>(true, lips::LOG_CONSOLE, true);
+#endif
 
   return true;
 }
@@ -103,12 +108,20 @@ void SystemClass::Run() {
   return;
 }
 
+std::shared_ptr<lips::LIPSBodyPoseRecord> skeleton;
+cv::Mat matRGB;
+cv::Mat matDepth;
 bool SystemClass::Frame() {
   bool result;
 
   // Check if the user pressed escape and wants to exit the application.
   if (m_Input->IsKeyDown(VK_ESCAPE)) {
     return false;
+  }
+
+  if (mPoseEngine && mPoseEngine->waitForUpdate()) {
+    mPoseEngine->readFrame(matRGB, matDepth, skeleton);
+    m_Graphics->m_modelSkeleton->update(skeleton);
   }
 
   // Do the frame processing for the graphics object.
@@ -120,11 +133,13 @@ bool SystemClass::Frame() {
   return true;
 }
 
-LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam, LPARAM lParam) {
+LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg,
+                                             WPARAM wParam, LPARAM lParam) {
   switch (umsg) {
     // Check if a key has been pressed on the keyboard.
   case WM_KEYUP: {
-    // If a key is pressed send it to the input object so it can record that state.
+    // If a key is pressed send it to the input object so it can record that
+    // state.
     m_Input->KeyUp((unsigned int)wParam);
     return 0;
   }
@@ -193,12 +208,14 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg, WPARAM wParam
       }
     }
 
-    // If a key is released then send it to the input object so it can unset the state for that key.
+    // If a key is released then send it to the input object so it can unset
+    // the state for that key.
     m_Input->KeyDown((unsigned int)wParam);
     return 0;
   }
 
-  // Any other messages send to the default message handler as our application won't make use of them.
+  // Any other messages send to the default message handler as our application
+  // won't make use of them.
   default: {
     return DefWindowProc(hwnd, umsg, wParam, lParam);
   }
@@ -240,9 +257,11 @@ void SystemClass::InitializeWindows(int &screenWidth, int &screenHeight) {
   screenWidth = GetSystemMetrics(SM_CXSCREEN);
   screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
-  // Setup the screen settings depending on whether it is running in full screen or in windowed mode.
+  // Setup the screen settings depending on whether it is running in full screen
+  // or in windowed mode.
   if (FULL_SCREEN) {
-    // If full screen set the screen to maximum size of the users desktop and 32bit.
+    // If full screen set the screen to maximum size of the users desktop and
+    // 32bit.
     memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
     dmScreenSettings.dmSize = sizeof(dmScreenSettings);
     dmScreenSettings.dmPelsWidth = (unsigned long)screenWidth;
@@ -266,9 +285,10 @@ void SystemClass::InitializeWindows(int &screenWidth, int &screenHeight) {
   }
 
   // Create the window with the screen settings and get the handle to it.
-  m_hwnd = CreateWindowExW(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
-                           WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP,
-                           posX, posY, screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
+  m_hwnd =
+      CreateWindowExW(WS_EX_APPWINDOW, m_applicationName, m_applicationName,
+                      WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_POPUP, posX, posY,
+                      screenWidth, screenHeight, NULL, NULL, m_hinstance, NULL);
 
   // Bring the window up on the screen and set it as main focus.
   ShowWindow(m_hwnd, SW_SHOW);
@@ -304,7 +324,8 @@ void SystemClass::ShutdownWindows() {
   return;
 }
 
-LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam, LPARAM lparam) {
+LRESULT CALLBACK WndProc(HWND hwnd, UINT umessage, WPARAM wparam,
+                         LPARAM lparam) {
   switch (umessage) {
     // Check if the window is being destroyed.
   case WM_DESTROY: {

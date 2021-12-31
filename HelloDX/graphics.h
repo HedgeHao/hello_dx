@@ -5,8 +5,9 @@
 #include "camera.h"
 #include "d3d.h"
 #include "model.h"
-#include "modelFloor.hpp"
 #include "modelAxis.hpp"
+#include "modelFloor.hpp"
+#include "modelSkeleton.hpp"
 #include "myShader.h"
 #include <windows.h>
 
@@ -26,6 +27,7 @@ public:
   bool Frame();
 
   Camera *m_Camera;
+  ModelSkeleton *m_modelSkeleton;
 
 private:
   bool Render();

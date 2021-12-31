@@ -4,38 +4,42 @@
 
 #define WIN32_LEAN_AND_MEAN
 
-#include <windows.h>
-#include "input_class.h"
 #include "graphics.h"
+#include "input_class.h"
+#include <windows.h>
 
-class SystemClass
-{
+#define LIPS_SKELETON
+
+#include "LIPSBodyPose.h"
+#include "LIPSBodyPoseTypes.h"
+
+class SystemClass {
 public:
-	SystemClass();
-	SystemClass(const SystemClass&);
-	~SystemClass();
+  SystemClass();
+  SystemClass(const SystemClass &);
+  ~SystemClass();
 
-	bool Initialize();
-	void Shutdown();
-	void Run();
+  bool Initialize();
+  void Shutdown();
+  void Run();
 
-	LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
+  LRESULT CALLBACK MessageHandler(HWND, UINT, WPARAM, LPARAM);
 
 private:
-	bool Frame();
-	void InitializeWindows(int&, int&);
-	void ShutdownWindows();
+  bool Frame();
+  void InitializeWindows(int &, int &);
+  void ShutdownWindows();
 
-	uint8_t controlMode = 49;
-	LPCWSTR m_applicationName;
-	HINSTANCE m_hinstance;
-	HWND m_hwnd;
-	InputClass* m_Input;
-	GraphicsClass* m_Graphics;
+  uint8_t controlMode = 49;
+  LPCWSTR m_applicationName;
+  HINSTANCE m_hinstance;
+  HWND m_hwnd;
+  InputClass *m_Input;
+  GraphicsClass *m_Graphics;
+  std::shared_ptr<lips::LIPSBodyPose> mPoseEngine;
 };
 
-
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
-static SystemClass* ApplicationHandle = 0;
+static SystemClass *ApplicationHandle = 0;
 
 #endif

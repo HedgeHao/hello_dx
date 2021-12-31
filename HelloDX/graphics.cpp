@@ -44,7 +44,8 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
   m_Model = new Model;
   result = m_Model->Initialize(m_Direct3D->GetDevice());
   if (!result) {
-    MessageBox(hwnd, L"Could not initialize the model object.", L"Error", MB_OK);
+    MessageBox(hwnd, L"Could not initialize the model object.", L"Error",
+               MB_OK);
     return false;
   }
 
@@ -53,6 +54,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 
   m_modelAxis = new ModelAxis();
   m_modelAxis->Initialize(m_Direct3D->GetDevice());
+
+  m_modelSkeleton = new ModelSkeleton();
+  m_modelSkeleton->Initialize(m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext());
 
   // Create the color shader object.
   m_ColorShader = new MyShader;
@@ -92,10 +96,16 @@ void GraphicsClass::Shutdown() {
     m_modelFloor = 0;
   }
 
-    if (m_modelAxis) {
+  if (m_modelAxis) {
     m_modelAxis->Shutdown();
     delete m_modelAxis;
     m_modelAxis = 0;
+  }
+
+  if (m_modelSkeleton) {
+    m_modelSkeleton->Shutdown();
+    delete m_modelSkeleton;
+    m_modelSkeleton = 0;
   }
 
   // Release the camera object.
@@ -140,8 +150,8 @@ bool GraphicsClass::Render() {
   m_Camera->GetViewMatrix(viewMatrix);
   m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
-  // Put the model vertex and index buffers on the graphics pipeline to prepare them for drawing.
-  // Render the model using the color shader.
+  // Put the model vertex and index buffers on the graphics pipeline to prepare
+  // them for drawing. Render the model using the color shader.
   m_Model->Render(m_Direct3D->GetDeviceContext());
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
                                  m_Model->GetIndexCount(), worldMatrix,
@@ -155,6 +165,12 @@ bool GraphicsClass::Render() {
   m_modelAxis->Render(m_Direct3D->GetDeviceContext());
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
                                  m_modelAxis->GetIndexCount(), worldMatrix,
+                                 viewMatrix, projectionMatrix);
+
+  m_modelSkeleton->Render(m_Direct3D->GetDeviceContext());
+  
+  result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
+                                 m_modelSkeleton->GetIndexCount(), worldMatrix,
                                  viewMatrix, projectionMatrix);
 
   if (!result) {
