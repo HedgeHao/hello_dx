@@ -45,6 +45,9 @@
     <ClInclude Include="modelFloor.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="modelAxis.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloDX.cpp">

@@ -6,6 +6,7 @@
 #include "d3d.h"
 #include "model.h"
 #include "modelFloor.hpp"
+#include "modelAxis.hpp"
 #include "myShader.h"
 #include <windows.h>
 
@@ -32,6 +33,7 @@ private:
   D3DClass *m_Direct3D;
   Model *m_Model;
   ModelFloor *m_modelFloor;
+  ModelAxis *m_modelAxis;
   MyShader *m_ColorShader;
 };
 

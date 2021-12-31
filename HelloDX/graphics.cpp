@@ -51,6 +51,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
   m_modelFloor = new ModelFloor();
   m_modelFloor->Initialize(m_Direct3D->GetDevice());
 
+  m_modelAxis = new ModelAxis();
+  m_modelAxis->Initialize(m_Direct3D->GetDevice());
+
   // Create the color shader object.
   m_ColorShader = new MyShader;
   if (!m_ColorShader) {
@@ -87,6 +90,12 @@ void GraphicsClass::Shutdown() {
     m_modelFloor->Shutdown();
     delete m_modelFloor;
     m_modelFloor = 0;
+  }
+
+    if (m_modelAxis) {
+    m_modelAxis->Shutdown();
+    delete m_modelAxis;
+    m_modelAxis = 0;
   }
 
   // Release the camera object.
@@ -141,6 +150,11 @@ bool GraphicsClass::Render() {
   m_modelFloor->Render(m_Direct3D->GetDeviceContext());
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
                                  m_modelFloor->GetIndexCount(), worldMatrix,
+                                 viewMatrix, projectionMatrix);
+
+  m_modelAxis->Render(m_Direct3D->GetDeviceContext());
+  result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
+                                 m_modelAxis->GetIndexCount(), worldMatrix,
                                  viewMatrix, projectionMatrix);
 
   if (!result) {
