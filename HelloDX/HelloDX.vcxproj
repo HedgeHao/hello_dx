@@ -148,6 +148,7 @@
     <ClInclude Include="d3d.h" />
     <ClInclude Include="input_class.h" />
     <ClInclude Include="model.h" />
+    <ClInclude Include="modelFloor.hpp" />
     <ClInclude Include="myShader.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="system_class.h" />
