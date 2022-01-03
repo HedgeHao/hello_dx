@@ -164,9 +164,10 @@
     <ClInclude Include="modelFloor.hpp" />
     <ClInclude Include="modelPointCloud.hpp" />
     <ClInclude Include="modelSkeleton.hpp" />
-    <ClInclude Include="modelSphere.hpp" />
+    <ClInclude Include="modelTest.hpp" />
     <ClInclude Include="myShader.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="sphere.h" />
     <ClInclude Include="system_class.h" />
   </ItemGroup>
   <ItemGroup>
@@ -178,6 +179,7 @@
     <ClCompile Include="graphics.cpp" />
     <ClCompile Include="model.cpp" />
     <ClCompile Include="myShader.cpp" />
+    <ClCompile Include="sphere.cpp" />
     <ClCompile Include="system_class.cpp" />
   </ItemGroup>
   <ItemGroup>

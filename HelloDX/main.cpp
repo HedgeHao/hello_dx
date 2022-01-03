@@ -1,3 +1,6 @@
+//#define LIPS_SKELETON
+//#define REALSENSE
+#define DEV
 
 #include "system_class.h"
 

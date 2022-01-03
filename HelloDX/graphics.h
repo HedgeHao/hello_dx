@@ -2,15 +2,18 @@
 #ifndef _GRAPHICSCLASS_H_
 #define _GRAPHICSCLASS_H_
 
+#include <windows.h>
+
 #include "camera.h"
 #include "d3d.h"
 #include "model.h"
 #include "modelAxis.hpp"
 #include "modelFloor.hpp"
-#include "modelSkeleton.hpp"
 #include "modelPointCloud.hpp"
+#include "modelSkeleton.hpp"
 #include "myShader.h"
-#include <windows.h>
+#include "modelTest.hpp"
+
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;
@@ -18,7 +21,7 @@ const float SCREEN_DEPTH = 1000.0f;
 const float SCREEN_NEAR = 0.1f;
 
 class GraphicsClass {
-public:
+ public:
   GraphicsClass();
   GraphicsClass(const GraphicsClass &);
   ~GraphicsClass();
@@ -29,9 +32,10 @@ public:
 
   Camera *m_Camera;
   ModelSkeleton *m_modelSkeleton;
-  ModelPointCloud* m_modelPointsCloud;
+  ModelPointCloud *m_modelPointsCloud;
+  ModelTest *m_modelTest;
 
-private:
+ private:
   bool Render();
 
   D3DClass *m_Direct3D;
