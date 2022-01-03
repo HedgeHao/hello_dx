@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 
+
 char debugMsg[256];
 void log() { OutputDebugStringA(debugMsg); }
 
@@ -52,6 +53,10 @@ bool SystemClass::Initialize() {
 #ifdef LIPS_SKELETON
   mPoseEngine =
       std::make_shared<lips::LIPSBodyPose>(true, lips::LOG_CONSOLE, true);
+#endif
+
+#ifdef REALSENSE
+  rsPipe.start();
 #endif
 
   return true;
@@ -119,10 +124,22 @@ bool SystemClass::Frame() {
     return false;
   }
 
+#ifdef LIPS_SKELETON
   if (mPoseEngine && mPoseEngine->waitForUpdate()) {
     mPoseEngine->readFrame(matRGB, matDepth, skeleton);
     m_Graphics->m_modelSkeleton->update(skeleton);
   }
+#endif
+
+#ifdef REALSENSE
+  rs2::frameset frames = rsPipe.wait_for_frames();
+  rs2::video_frame colorFrame = frames.get_color_frame();
+  rs2::video_frame depthFrame = frames.get_depth_frame();
+  rsPointCloud.map_to(colorFrame);
+  rsPoints = rsPointCloud.calculate(depthFrame);
+  m_Graphics->m_modelPointsCloud->update(rsPoints);
+#endif
+
 
   // Do the frame processing for the graphics object.
   result = m_Graphics->Frame();

@@ -8,10 +8,13 @@
 #include "input_class.h"
 #include <windows.h>
 
-#define LIPS_SKELETON
+//#define LIPS_SKELETON
+#define REALSENSE
 
 #include "LIPSBodyPose.h"
 #include "LIPSBodyPoseTypes.h"
+
+#include <librealsense2/rs.hpp>
 
 class SystemClass {
 public:
@@ -37,6 +40,9 @@ private:
   InputClass *m_Input;
   GraphicsClass *m_Graphics;
   std::shared_ptr<lips::LIPSBodyPose> mPoseEngine;
+  rs2::pipeline rsPipe;
+  rs2::pointcloud rsPointCloud;
+  rs2::points rsPoints;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);

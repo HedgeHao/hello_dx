@@ -8,6 +8,7 @@
 #include "modelAxis.hpp"
 #include "modelFloor.hpp"
 #include "modelSkeleton.hpp"
+#include "modelPointCloud.hpp"
 #include "myShader.h"
 #include <windows.h>
 
@@ -28,6 +29,7 @@ public:
 
   Camera *m_Camera;
   ModelSkeleton *m_modelSkeleton;
+  ModelPointCloud* m_modelPointsCloud;
 
 private:
   bool Render();
