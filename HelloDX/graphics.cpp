@@ -187,9 +187,9 @@ bool GraphicsClass::Render() {
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
                                  m_modelTest->GetIndexCount(), worldMatrix,
                                  viewMatrix, projectionMatrix);
-  //char d[20];
-  //sprintf_s(d, "Debug:%d\n", result);
-  //OutputDebugStringA(d);
+  // char d[20];
+  // sprintf_s(d, "Debug:%d\n", result);
+  // OutputDebugStringA(d);
 
 #ifdef LIPS_SKELETON
   m_modelSkeleton->Render(m_Direct3D->GetDeviceContext());

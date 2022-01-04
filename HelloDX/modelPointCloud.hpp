@@ -43,6 +43,10 @@ class ModelPointCloud {
 
     indices = new unsigned int[POINTS_LENGTH];
     m_indexCount = 0;
+    for (unsigned int i = 0; i < POINTS_LENGTH; i++) {
+      vertices[i].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+      indices[i] = i;
+    }
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -85,16 +89,13 @@ class ModelPointCloud {
     const rs2::vertex* rsVertices = points.get_vertices();
     const int size = points.get_data_size();
 
-    const int factor = 5;
+    const int factor = 1;
     m_vertexCount = 0;
     for (unsigned int i = 0; i < points.size(); i++) {
       if (rsVertices[i].z) {
         m_vertexCount++;
         vertices[m_vertexCount - 1].position =
-            XMFLOAT3(rsVertices[i].x * factor, rsVertices[i].y * factor,
-                     rsVertices[i].z * factor);
-        vertices[m_vertexCount - 1].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
-        indices[m_vertexCount - 1] = m_vertexCount - 1;
+            XMFLOAT3(rsVertices[i].x, rsVertices[i].y*-1, rsVertices[i].z);
       }
     }
     d3dContext->UpdateSubresource(m_vertexBuffer, 0, nullptr, vertices, 0, 0);

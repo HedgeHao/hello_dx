@@ -14,6 +14,10 @@
 #include "myShader.h"
 #include "modelTest.hpp"
 
+//#define LIPS_SKELETON
+#define REALSENSE
+#define DEV
+
 
 const bool FULL_SCREEN = false;
 const bool VSYNC_ENABLED = true;

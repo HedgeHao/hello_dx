@@ -135,6 +135,13 @@ bool SystemClass::Frame() {
   rs2::frameset frames = rsPipe.wait_for_frames();
   rs2::video_frame colorFrame = frames.get_color_frame();
   rs2::video_frame depthFrame = frames.get_depth_frame();
+
+  /*char d[20];
+  sprintf_s(d, "%d,%d:%d,%d\n", colorFrame.get_width(), colorFrame.get_height(),
+            depthFrame.get_width(), depthFrame.get_height());
+  OutputDebugStringA(d);
+  640, 480 : 848, 480*/
+
   rsPointCloud.map_to(colorFrame);
   rsPoints = rsPointCloud.calculate(depthFrame);
   m_Graphics->m_modelPointsCloud->update(rsPoints);
