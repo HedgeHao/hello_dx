@@ -56,7 +56,10 @@ bool SystemClass::Initialize() {
 #endif
 
 #ifdef REALSENSE
-  rsPipe.start();
+  rs2::config cfg;
+  cfg.enable_stream(RS2_STREAM_COLOR, 640, 480);
+  cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
+  rsPipe.start(cfg);
 #endif
 
   return true;
@@ -134,13 +137,7 @@ bool SystemClass::Frame() {
 #ifdef REALSENSE
   rs2::frameset frames = rsPipe.wait_for_frames();
   rs2::video_frame colorFrame = frames.get_color_frame();
-  rs2::video_frame depthFrame = frames.get_depth_frame();
-
-  /*char d[20];
-  sprintf_s(d, "%d,%d:%d,%d\n", colorFrame.get_width(), colorFrame.get_height(),
-            depthFrame.get_width(), depthFrame.get_height());
-  OutputDebugStringA(d);
-  640, 480 : 848, 480*/
+  rs2::depth_frame depthFrame = frames.get_depth_frame();
 
   rsPointCloud.map_to(colorFrame);
   rsPoints = rsPointCloud.calculate(depthFrame);
@@ -188,44 +185,35 @@ LRESULT CALLBACK SystemClass::MessageHandler(HWND hwnd, UINT umsg,
     default:
       if (controlMode == 49) {
         switch ((unsigned int)wParam) {
-          // z~n
-        case 90:
+        case 65:
           m_Graphics->m_Camera->Move(-0.05, 0, 0);
           break;
-        case 88:
-          m_Graphics->m_Camera->Move(0.05, 0, 0);
-          break;
-        case 67:
+        case 83:
           m_Graphics->m_Camera->Move(0, -0.05, 0);
           break;
-        case 86:
-          m_Graphics->m_Camera->Move(0, 0.05, 0);
-          break;
-        case 66:
-          m_Graphics->m_Camera->Move(0, 0, -0.05);
-          break;
-        case 78:
-          m_Graphics->m_Camera->Move(0, 0, 0.05);
-          break;
-
-        // a~h
-        case 65:
-          m_Graphics->m_Camera->Rotate(1, 0, 0);
-          break;
-        case 83:
-          m_Graphics->m_Camera->Rotate(-1, 0, 0);
-          break;
         case 68:
-          m_Graphics->m_Camera->Rotate(0, 1, 0);
-          break;
-        case 70:
-          m_Graphics->m_Camera->Rotate(0, -1, 0);
+          m_Graphics->m_Camera->Move(0.05, 0, 0);
           break;
         case 71:
           m_Graphics->m_Camera->Rotate(0, 0, 1);
           break;
         case 72:
           m_Graphics->m_Camera->Rotate(0, 0, -1);
+          break;
+        case 87:
+          m_Graphics->m_Camera->Move(0, 0.05, 0);
+          break;
+        case 90:
+          m_Graphics->m_Camera->Rotate(0, -1, 0);
+          break;
+        case 67:
+          m_Graphics->m_Camera->Rotate(0, 1, 0);
+          break;
+        case 81:
+          m_Graphics->m_Camera->Move(0, 0, -0.05);
+          break;
+        case 69:
+          m_Graphics->m_Camera->Move(0, 0, 0.05);
           break;
         }
         break;

@@ -44,13 +44,14 @@ class ModelPointCloud {
     indices = new unsigned int[POINTS_LENGTH];
     m_indexCount = 0;
     for (unsigned int i = 0; i < POINTS_LENGTH; i++) {
+      vertices[i].position = XMFLOAT3(0, 0, 0);
       vertices[i].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
       indices[i] = i;
     }
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexBufferDesc.ByteWidth = POINTS_LENGTH;  // Buffer Size 要先開好
+    vertexBufferDesc.ByteWidth = sizeof(VertexType) * POINTS_LENGTH;  // Buffer Size 要先開好
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vertexBufferDesc.CPUAccessFlags = 0;
     vertexBufferDesc.MiscFlags = 0;
@@ -85,17 +86,33 @@ class ModelPointCloud {
     return true;
   };
 
+  char d[100];
+  void update(rs2::depth_frame frame) {
+    m_vertexCount = 0;
+    for (int y = 0; y < 480; y++) {
+      for (int x = 0; x < 640; x++) {
+        vertices[m_vertexCount].position.x = x * 0.005;
+        vertices[m_vertexCount].position.y = y * 0.005;
+        vertices[m_vertexCount].position.z = frame.get_distance(x,y)*0.5;
+        m_vertexCount++;
+      }
+    }
+    d3dContext->UpdateSubresource(m_vertexBuffer, 0, nullptr, vertices, 0, 0);
+    m_indexCount = m_vertexCount;
+    d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
+  }
+
   void update(rs2::points points) {
     const rs2::vertex* rsVertices = points.get_vertices();
     const int size = points.get_data_size();
 
-    const int factor = 1;
     m_vertexCount = 0;
     for (unsigned int i = 0; i < points.size(); i++) {
       if (rsVertices[i].z) {
         m_vertexCount++;
-        vertices[m_vertexCount - 1].position =
-            XMFLOAT3(rsVertices[i].x, rsVertices[i].y*-1, rsVertices[i].z);
+        vertices[m_vertexCount - 1].position.x = rsVertices[i].x;
+        vertices[m_vertexCount - 1].position.y = rsVertices[i].y * -1;
+        vertices[m_vertexCount - 1].position.z = rsVertices[i].z - 0.5;
       }
     }
     d3dContext->UpdateSubresource(m_vertexBuffer, 0, nullptr, vertices, 0, 0);
