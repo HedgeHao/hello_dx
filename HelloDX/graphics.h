@@ -14,6 +14,9 @@
 #include "myShader.h"
 #include "modelTest.hpp"
 
+#include "textureShader.h"
+#include "modelWithTexture.h"
+
 //#define LIPS_SKELETON
 #define REALSENSE
 #define DEV
@@ -44,9 +47,11 @@ class GraphicsClass {
 
   D3DClass *m_Direct3D;
   Model *m_Model;
+  ModelWithTexture *m_ModelWithTexture; 
   ModelFloor *m_modelFloor;
   ModelAxis *m_modelAxis;
   MyShader *m_ColorShader;
+  TextureShaderClass *m_TextureShader;
 };
 
 #endif

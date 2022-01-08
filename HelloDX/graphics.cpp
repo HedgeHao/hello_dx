@@ -5,6 +5,7 @@ GraphicsClass::GraphicsClass() {
   m_Camera = 0;
   m_Model = 0;
   m_ColorShader = 0;
+  m_TextureShader = 0;
 }
 
 GraphicsClass::GraphicsClass(const GraphicsClass& other) {}
@@ -49,6 +50,15 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
     return false;
   }
 
+  m_ModelWithTexture = new ModelWithTexture();
+  result = m_ModelWithTexture->Initialize(
+      m_Direct3D->GetDevice(), m_Direct3D->GetDeviceContext(), "stone.tga");
+  if (!result) {
+    MessageBox(hwnd, L"Could not initialize the model object.", L"Error",
+               MB_OK);
+    return false;
+  }
+
   m_modelFloor = new ModelFloor();
   m_modelFloor->Initialize(m_Direct3D->GetDevice());
 
@@ -67,14 +77,24 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
   m_modelTest->Initialize(m_Direct3D->GetDevice(),
                           m_Direct3D->GetDeviceContext());
 
-  // Create the color shader object.
+  // [ Color shader ]
   m_ColorShader = new MyShader;
   if (!m_ColorShader) {
     return false;
   }
-
-  // Initialize the color shader object.
   result = m_ColorShader->Initialize(m_Direct3D->GetDevice(), hwnd);
+  if (!result) {
+    MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error",
+               MB_OK);
+    return false;
+  }
+
+  // [ Texture Shader]
+  m_TextureShader = new TextureShaderClass;
+  if (!m_TextureShader) {
+    return false;
+  }
+  result = m_TextureShader->Initialize(m_Direct3D->GetDevice(), hwnd);
   if (!result) {
     MessageBox(hwnd, L"Could not initialize the color shader object.", L"Error",
                MB_OK);
@@ -85,6 +105,13 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
 }
 
 void GraphicsClass::Shutdown() {
+  // Release the texture shader object.
+  if (m_TextureShader) {
+    m_TextureShader->Shutdown();
+    delete m_TextureShader;
+    m_TextureShader = 0;
+  }
+
   // Release the color shader object.
   if (m_ColorShader) {
     m_ColorShader->Shutdown();
@@ -187,9 +214,6 @@ bool GraphicsClass::Render() {
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
                                  m_modelTest->GetIndexCount(), worldMatrix,
                                  viewMatrix, projectionMatrix);
-  // char d[20];
-  // sprintf_s(d, "Debug:%d\n", result);
-  // OutputDebugStringA(d);
 
 #ifdef LIPS_SKELETON
   m_modelSkeleton->Render(m_Direct3D->GetDeviceContext());
@@ -205,9 +229,12 @@ bool GraphicsClass::Render() {
                                  worldMatrix, viewMatrix, projectionMatrix);
 #endif
 
-  if (!result) {
-    return false;
-  }
+  /* [Use Texture Shader] */
+  // Render the model using the texture shader.
+  result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(),
+                                   m_ModelWithTexture->GetIndexCount(),
+                                   worldMatrix, viewMatrix, projectionMatrix,
+                                   m_ModelWithTexture->GetTexture());
 
   // Present the rendered scene to the screen.
   m_Direct3D->EndScene();
