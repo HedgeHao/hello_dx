@@ -11,8 +11,7 @@ TextureClass::TextureClass(const TextureClass& other) {}
 TextureClass::~TextureClass() {}
 
 bool TextureClass::Initialize(ID3D11Device* device,
-                              ID3D11DeviceContext* deviceContext,
-                              const char* filename) {
+                              ID3D11DeviceContext* deviceContext) {
   HRESULT hResult;
   // ID3D11Resource* resource;
   // hResult = CreateWICTextureFromFile(device, deviceContext, L"car.png",

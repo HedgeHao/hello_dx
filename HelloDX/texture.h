@@ -27,7 +27,7 @@ class TextureClass {
   TextureClass(const TextureClass&);
   ~TextureClass();
 
-  bool Initialize(ID3D11Device*, ID3D11DeviceContext*, const char*);
+  bool Initialize(ID3D11Device*, ID3D11DeviceContext*);
   void Shutdown();
   void update(ID3D11DeviceContext*);
 

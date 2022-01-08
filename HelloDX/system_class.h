@@ -5,7 +5,7 @@
 #define WIN32_LEAN_AND_MEAN
 
 //#define LIPS_SKELETON
-//#define REALSENSE
+#define REALSENSE
 #define DEV
 
 #include "graphics.h"

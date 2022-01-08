@@ -141,7 +141,7 @@ bool SystemClass::Frame() {
 
   rsPointCloud.map_to(colorFrame);
   rsPoints = rsPointCloud.calculate(depthFrame);
-  m_Graphics->m_modelPointsCloud->update(rsPoints);
+  m_Graphics->m_modelPointsCloud->update(rsPoints, colorFrame);
 #endif
 
 

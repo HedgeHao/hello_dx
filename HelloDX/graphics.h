@@ -19,7 +19,7 @@
 #include "modelWithTexture.h"
 
 //#define LIPS_SKELETON
-//#define REALSENSE
+#define REALSENSE
 #define DEV
 
 

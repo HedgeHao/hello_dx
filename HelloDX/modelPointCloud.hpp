@@ -8,15 +8,18 @@
 
 #include <librealsense2/rs.hpp>
 
+#include "texture.h"
+
 using namespace DirectX;
 
-#define POINTS_LENGTH 1280 * 720
+#define WIDTH 640
+#define HEIGHT 480
 
 class ModelPointCloud {
  private:
   struct VertexType {
     XMFLOAT3 position;
-    XMFLOAT4 color;
+    XMFLOAT2 texture;
   };
 
   D3D11_SUBRESOURCE_DATA vertexData, indexData;
@@ -27,6 +30,7 @@ class ModelPointCloud {
   D3D11_BUFFER_DESC vertexBufferDesc, indexBufferDesc;
   ID3D11Buffer *m_vertexBuffer, *m_indexBuffer;
   int m_vertexCount, m_indexCount;
+  TextureClass* m_TextureClass;
 
  public:
   ModelPointCloud(){};
@@ -38,20 +42,21 @@ class ModelPointCloud {
     d3dContext = context;
     HRESULT result;
 
-    vertices = new VertexType[POINTS_LENGTH];
+    vertices = new VertexType[WIDTH * HEIGHT];
     m_vertexCount = 0;
 
-    indices = new unsigned int[POINTS_LENGTH];
+    indices = new unsigned int[WIDTH * HEIGHT];
     m_indexCount = 0;
-    for (unsigned int i = 0; i < POINTS_LENGTH; i++) {
+    for (unsigned int i = 0; i < WIDTH * HEIGHT; i++) {
       vertices[i].position = XMFLOAT3(0, 0, 0);
-      vertices[i].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
+      vertices[i].texture = XMFLOAT2(i % WIDTH, floor(i / HEIGHT));
       indices[i] = i;
     }
 
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
-    vertexBufferDesc.ByteWidth = sizeof(VertexType) * POINTS_LENGTH;  // Buffer Size 要先開好
+    vertexBufferDesc.ByteWidth =
+        sizeof(VertexType) * WIDTH * HEIGHT;  // Buffer Size 要先開好
     vertexBufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
     vertexBufferDesc.CPUAccessFlags = 0;
     vertexBufferDesc.MiscFlags = 0;
@@ -68,7 +73,7 @@ class ModelPointCloud {
     // Set up the description of the static index buffer.
     indexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     indexBufferDesc.ByteWidth =
-        sizeof(unsigned int) * POINTS_LENGTH;  // Buffer Size 要先開好
+        sizeof(unsigned int) * WIDTH * HEIGHT;  // Buffer Size 要先開好
     indexBufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
     indexBufferDesc.CPUAccessFlags = 0;
     indexBufferDesc.MiscFlags = 0;
@@ -83,6 +88,11 @@ class ModelPointCloud {
       return false;
     }
 
+    result = LoadTexture(device, context);
+    if (!result) {
+      return false;
+    }
+
     return true;
   };
 
@@ -93,7 +103,7 @@ class ModelPointCloud {
       for (int x = 0; x < 640; x++) {
         vertices[m_vertexCount].position.x = x * 0.005;
         vertices[m_vertexCount].position.y = y * 0.005;
-        vertices[m_vertexCount].position.z = frame.get_distance(x,y)*0.5;
+        vertices[m_vertexCount].position.z = frame.get_distance(x, y) * 0.5;
         m_vertexCount++;
       }
     }
@@ -102,7 +112,7 @@ class ModelPointCloud {
     d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
   }
 
-  void update(rs2::points points) {
+  void update(rs2::points points, rs2::video_frame color) {
     const rs2::vertex* rsVertices = points.get_vertices();
     const int size = points.get_data_size();
 
@@ -121,15 +131,6 @@ class ModelPointCloud {
     d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
   }
 
-  void update() {
-    vertices[0].position = XMFLOAT3(1.0, 0, 0);
-    vertices[0].color = XMFLOAT4(1.0f, 0, 0, 1.0f);
-    indices[0] = 0;
-
-    m_vertexCount = 1;
-    m_indexCount = 1;
-  }
-
   void Render(ID3D11DeviceContext* deviceContext) {
     unsigned int stride;
     unsigned int offset;
@@ -143,6 +144,38 @@ class ModelPointCloud {
   };
 
   int GetIndexCount() { return m_indexCount; }
+  ID3D11ShaderResourceView* GetTexture() {
+    return m_TextureClass->GetTexture();
+  };
+
+  bool LoadTexture(ID3D11Device* device, ID3D11DeviceContext* deviceContext) {
+    bool result;
+
+    // Create the texture object.
+    m_TextureClass = new TextureClass;
+    if (!m_TextureClass) {
+      return false;
+    }
+
+    // Initialize the texture object.
+    result = m_TextureClass->Initialize(device, deviceContext);
+    if (!result) {
+      return false;
+    }
+
+    return true;
+  }
+
+  void ReleaseTexture() {
+    // Release the texture object.
+    if (m_TextureClass) {
+      m_TextureClass->Shutdown();
+      delete m_TextureClass;
+      m_TextureClass = 0;
+    }
+
+    return;
+  }
 
   void Shutdown() {
     if (m_indexBuffer) {
