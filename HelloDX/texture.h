@@ -6,6 +6,7 @@
 //////////////
 #include <d3d11.h>
 #include <stdio.h>
+#include <librealsense2\rs.hpp>
 
 #include "WICTextureLoader.h"
 
@@ -29,7 +30,7 @@ class TextureClass {
 
   bool Initialize(ID3D11Device*, ID3D11DeviceContext*);
   void Shutdown();
-  void update(ID3D11DeviceContext*);
+  void update(ID3D11DeviceContext*, rs2::video_frame*);
 
   ID3D11ShaderResourceView* GetTexture();
 

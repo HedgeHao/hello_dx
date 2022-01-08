@@ -1,5 +1,9 @@
 #include "texture.h"
 
+#include <opencv2/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
 TextureClass::TextureClass() {
   m_targaData = 0;
   m_texture = 0;
@@ -13,9 +17,6 @@ TextureClass::~TextureClass() {}
 bool TextureClass::Initialize(ID3D11Device* device,
                               ID3D11DeviceContext* deviceContext) {
   HRESULT hResult;
-  // ID3D11Resource* resource;
-  // hResult = CreateWICTextureFromFile(device, deviceContext, L"car.png",
-  //                                 &resource, &m_textureView);
 
   uint32_t* pixels = new uint32_t[640 * 480];
   uint8_t temp = 0;
@@ -33,7 +34,8 @@ bool TextureClass::Initialize(ID3D11Device* device,
   desc.ArraySize = 1;
   desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
   desc.SampleDesc.Count = 1;
-  desc.Usage = D3D11_USAGE_DEFAULT; // ** [If this is immutable. it cannot be updated]
+  desc.Usage =
+      D3D11_USAGE_DEFAULT;  // ** [If this is immutable. it cannot be updated]
   desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
 
   hResult = device->CreateTexture2D(&desc, &initData, &m_texture);
@@ -53,17 +55,40 @@ bool TextureClass::Initialize(ID3D11Device* device,
     return false;
   }
 
+  /*ID3D11Resource* resource;
+hResult = CreateWICTextureFromFile(device, deviceContext, L"car.png",
+                              &resource, &m_textureView);*/
+
   return true;
 }
 
-void TextureClass::update(ID3D11DeviceContext* context) {
+void TextureClass::update(ID3D11DeviceContext* context,
+                          rs2::video_frame* color) {
+  cv::Mat m =
+      cv::Mat(480, 640, CV_8UC3, (void*)color->get_data(), cv::Mat::AUTO_STEP);
+  cv::cvtColor(m, m, cv::COLOR_BGR2RGB);
+  cv::imwrite("cv.jpg", m);
+
+
   uint32_t* pixels = new uint32_t[640 * 480];
-  uint8_t temp = 0;
-  for (unsigned int i = 0; i < 640 * 480; i++) {
-    temp = i % 255;
-    // RGBA
-    pixels[i] = 0xFF + (0 << 8) + (temp << 16) + (0xFF << 24);
+  const uint8_t* data = (const uint8_t*)color->get_data();
+
+  unsigned int index = 0;
+    for (int y = 0; y < 480; y++) {
+  for (int x = 0; x < 640; x++) {
+      pixels[index] = m.at<cv::Vec3b>(y, x)[0] +
+                      (m.at<cv::Vec3b>(y, x)[1] << 8) +
+                      (m.at<cv::Vec3b>(y, x)[2] << 16) + (0xFF << 24);
+      index++;
+    }
   }
+
+  // for (unsigned int i = 0; i < 640 * 480; i++) {
+  //  // RGBA
+  //  pixels[i] = (data[i * 3]) + (data[i * 3 + 1] << 8) +
+  //              (data[i * 3 + 2] << 16) + (0xFF << 24);
+  //  // pixels[i] = (i % 255) + (0 << 8) + (255 << 16) + (0xFF << 24);
+  //}
 
   context->UpdateSubresource(m_texture, 0, nullptr, pixels, 0, 0);
 }

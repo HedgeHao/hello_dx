@@ -47,10 +47,17 @@ class ModelPointCloud {
 
     indices = new unsigned int[WIDTH * HEIGHT];
     m_indexCount = 0;
-    for (unsigned int i = 0; i < WIDTH * HEIGHT; i++) {
-      vertices[i].position = XMFLOAT3(0, 0, 0);
-      vertices[i].texture = XMFLOAT2(i % WIDTH, floor(i / HEIGHT));
-      indices[i] = i;
+
+
+    unsigned count = 0;
+    for (unsigned int y = 0; y < HEIGHT; y++) {
+      for (unsigned int x = 0; x < WIDTH; x++) {
+        vertices[count].position = XMFLOAT3(0, 0, 0);
+        vertices[count].texture = XMFLOAT2((float)x/(float)WIDTH, (float)y/(float)HEIGHT);
+
+        indices[count] = count;
+        count++;
+      }
     }
 
     // Set up the description of the static vertex buffer.
@@ -112,8 +119,11 @@ class ModelPointCloud {
     d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
   }
 
-  void update(rs2::points points, rs2::video_frame color) {
+  void update(rs2::points points, rs2::video_frame* color) {
+    
+
     const rs2::vertex* rsVertices = points.get_vertices();
+    const rs2::texture_coordinate *rsCoord = points.get_texture_coordinates();
     const int size = points.get_data_size();
 
     m_vertexCount = 0;
@@ -123,12 +133,16 @@ class ModelPointCloud {
         vertices[m_vertexCount - 1].position.x = rsVertices[i].x;
         vertices[m_vertexCount - 1].position.y = rsVertices[i].y * -1;
         vertices[m_vertexCount - 1].position.z = rsVertices[i].z - 0.5;
+        vertices[m_vertexCount - 1].texture.x = rsCoord[i].u;
+        vertices[m_vertexCount - 1].texture.y = rsCoord[i].v;
       }
     }
     d3dContext->UpdateSubresource(m_vertexBuffer, 0, nullptr, vertices, 0, 0);
 
     m_indexCount = m_vertexCount;
     d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
+
+    m_TextureClass->update(d3dContext, color);
   }
 
   void Render(ID3D11DeviceContext* deviceContext) {

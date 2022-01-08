@@ -50,7 +50,6 @@ ID3D11ShaderResourceView* ModelWithTexture::GetTexture() {
 void ModelWithTexture::Render(ID3D11DeviceContext* deviceContext) {
   // Put the vertex and index buffers on the graphics pipeline to prepare them
   // for drawing.
-  m_TextureClass->update(deviceContext);
   RenderBuffers(deviceContext);
 
   return;
