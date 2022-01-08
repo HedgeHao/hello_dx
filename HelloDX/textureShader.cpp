@@ -1,3 +1,6 @@
+////////////////////////////////////////////////////////////////////////////////
+// Filename: textureshaderclass.cpp
+////////////////////////////////////////////////////////////////////////////////
 #include "textureShader.h"
 
 TextureShaderClass::TextureShaderClass() {
@@ -5,7 +8,6 @@ TextureShaderClass::TextureShaderClass() {
   m_pixelShader = 0;
   m_layout = 0;
   m_matrixBuffer = 0;
-
   m_sampleState = 0;
 }
 
@@ -15,6 +17,7 @@ TextureShaderClass::~TextureShaderClass() {}
 
 bool TextureShaderClass::Initialize(ID3D11Device* device, HWND hwnd) {
   bool result;
+
   // Initialize the vertex and pixel shaders.
   WCHAR vertextShaderFile[] = L"./myTextureVertexShader.hlsl";
   WCHAR pixelShaderFile[] = L"./myTexturePixelShader.hlsl";
@@ -33,10 +36,6 @@ void TextureShaderClass::Shutdown() {
   return;
 }
 
-/*The Render function now takes a new parameter called texture which is the
-  pointer to the texture resource. This is then sent into the
-  SetShaderParameters function so that the texture can be set in the shader and
-  then used for rendering.*/
 bool TextureShaderClass::Render(ID3D11DeviceContext* deviceContext,
                                 int indexCount, XMMATRIX worldMatrix,
                                 XMMATRIX viewMatrix, XMMATRIX projectionMatrix,
@@ -66,7 +65,6 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
   D3D11_INPUT_ELEMENT_DESC polygonLayout[2];
   unsigned int numElements;
   D3D11_BUFFER_DESC matrixBufferDesc;
-
   D3D11_SAMPLER_DESC samplerDesc;
 
   // Initialize the pointers this function will use to null.
@@ -182,7 +180,7 @@ bool TextureShaderClass::InitializeShader(ID3D11Device* device, HWND hwnd,
     return false;
   }
 
-  // [Create a texture sampler state description]
+  // Create a texture sampler state description.
   samplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
   samplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
   samplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
@@ -316,7 +314,7 @@ bool TextureShaderClass::SetShaderParameters(
   // values.
   deviceContext->VSSetConstantBuffers(bufferNumber, 1, &m_matrixBuffer);
 
-  // [Set shader texture resource in the pixel shader]
+  // Set shader texture resource in the pixel shader.
   deviceContext->PSSetShaderResources(0, 1, &texture);
 
   return true;

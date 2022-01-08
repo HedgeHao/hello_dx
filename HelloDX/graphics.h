@@ -7,6 +7,7 @@
 #include "camera.h"
 #include "d3d.h"
 #include "model.h"
+#include "modelTriangle.h"
 #include "modelAxis.hpp"
 #include "modelFloor.hpp"
 #include "modelPointCloud.hpp"
@@ -18,7 +19,7 @@
 #include "modelWithTexture.h"
 
 //#define LIPS_SKELETON
-#define REALSENSE
+//#define REALSENSE
 #define DEV
 
 
@@ -47,6 +48,7 @@ class GraphicsClass {
 
   D3DClass *m_Direct3D;
   Model *m_Model;
+  ModelTriangle *m_modelTriangle;
   ModelWithTexture *m_ModelWithTexture; 
   ModelFloor *m_modelFloor;
   ModelAxis *m_modelAxis;

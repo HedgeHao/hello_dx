@@ -17,8 +17,8 @@ bool MyShader::Initialize(ID3D11Device *device, HWND hwnd) {
   bool result;
 
   // Initialize the vertex and pixel shaders.
-  WCHAR vertextShaderFile[] = L"./myVertexShader.hlsl";
-  WCHAR pixelShaderFile[] = L"./myPixelShader.hlsl";
+  WCHAR vertextShaderFile[] = L"myVertexShader.hlsl";
+  WCHAR pixelShaderFile[] = L"myPixelShader.hlsl";
   result = InitializeShader(device, hwnd, vertextShaderFile, pixelShaderFile);
   if (!result) {
     return false;

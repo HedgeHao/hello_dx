@@ -51,10 +51,6 @@ class ModelTest {
       vertices[i].color = XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f);
     }
 
-    char de[20];
-    sprintf_s(de, "L:%d\n", mySphere.getVertexCount());
-    OutputDebugStringA(de);
-
     // Set up the description of the static vertex buffer.
     vertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     vertexBufferDesc.ByteWidth = sizeof(VertexType) * mySphere.getVertexCount();

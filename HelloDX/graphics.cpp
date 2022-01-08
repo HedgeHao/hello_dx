@@ -59,6 +59,9 @@ bool GraphicsClass::Initialize(int screenWidth, int screenHeight, HWND hwnd) {
     return false;
   }
 
+  //m_modelTriangle = new ModelTriangle();
+  //m_modelTriangle->Initialize(m_Direct3D->GetDevice());
+
   m_modelFloor = new ModelFloor();
   m_modelFloor->Initialize(m_Direct3D->GetDevice());
 
@@ -124,6 +127,12 @@ void GraphicsClass::Shutdown() {
     m_Model->Shutdown();
     delete m_Model;
     m_Model = 0;
+  }
+
+   if (m_modelTriangle) {
+    m_modelTriangle->Shutdown();
+    delete m_Model;
+    m_modelTriangle = 0;
   }
 
   if (m_modelFloor) {
@@ -192,12 +201,19 @@ bool GraphicsClass::Render() {
   m_Camera->GetViewMatrix(viewMatrix);
   m_Direct3D->GetProjectionMatrix(projectionMatrix);
 
+
+
   // Put the model vertex and index buffers on the graphics pipeline to prepare
   // them for drawing. Render the model using the color shader.
   m_Model->Render(m_Direct3D->GetDeviceContext());
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
                                  m_Model->GetIndexCount(), worldMatrix,
                                  viewMatrix, projectionMatrix);
+
+  /* m_modelTriangle->Render(m_Direct3D->GetDeviceContext());
+  result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
+                                 m_modelTriangle->GetIndexCount(), worldMatrix,
+                                 viewMatrix, projectionMatrix);*/
 
   m_modelFloor->Render(m_Direct3D->GetDeviceContext());
   result = m_ColorShader->Render(m_Direct3D->GetDeviceContext(),
@@ -231,6 +247,7 @@ bool GraphicsClass::Render() {
 
   /* [Use Texture Shader] */
   // Render the model using the texture shader.
+  m_ModelWithTexture->Render(m_Direct3D->GetDeviceContext());
   result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(),
                                    m_ModelWithTexture->GetIndexCount(),
                                    worldMatrix, viewMatrix, projectionMatrix,

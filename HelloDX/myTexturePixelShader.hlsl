@@ -1,15 +1,15 @@
 /////////////
 // GLOBALS //
 /////////////
-Texture2D shaderTexture;
-SamplerState SampleType;
+Texture2D shaderTexture : TEXTURE : register(t0);
+SamplerState SampleType : SAMPLER : register(s0);
 
 //////////////
 // TYPEDEFS //
 //////////////
 struct PixelInputType {
   float4 position : SV_POSITION;
-  float2 tex : TEXCOORD0;
+  float2 tex : TEXCOORD;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

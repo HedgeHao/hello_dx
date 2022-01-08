@@ -81,6 +81,12 @@
     <ClInclude Include="modelWithTexture.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="modelTriangle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HelloDX.cpp">
@@ -122,6 +128,12 @@
     <ClCompile Include="modelWithTexture.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="modelTriangle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="HelloDX.rc">
@@ -136,6 +148,9 @@
       <Filter>Resource Files</Filter>
     </Image>
     <Image Include="stone.tga">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="car.png">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>
