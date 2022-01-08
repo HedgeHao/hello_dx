@@ -6,7 +6,7 @@
 ModelWithTexture::ModelWithTexture() {
   m_vertexBuffer = 0;
   m_indexBuffer = 0;
-  m_Texture = 0;
+  m_TextureClass = 0;
 }
 
 ModelWithTexture::ModelWithTexture(const ModelWithTexture& other) {}
@@ -44,12 +44,13 @@ void ModelWithTexture::Shutdown() {
 }
 
 ID3D11ShaderResourceView* ModelWithTexture::GetTexture() {
-  return m_Texture->GetTexture();
+  return m_TextureClass->GetTexture();
 }
 
 void ModelWithTexture::Render(ID3D11DeviceContext* deviceContext) {
   // Put the vertex and index buffers on the graphics pipeline to prepare them
   // for drawing.
+  m_TextureClass->update(deviceContext);
   RenderBuffers(deviceContext);
 
   return;
@@ -192,13 +193,13 @@ bool ModelWithTexture::LoadTexture(ID3D11Device* device,
   bool result;
 
   // Create the texture object.
-  m_Texture = new TextureClass;
-  if (!m_Texture) {
+  m_TextureClass = new TextureClass;
+  if (!m_TextureClass) {
     return false;
   }
 
   // Initialize the texture object.
-  result = m_Texture->Initialize(device, deviceContext, filename);
+  result = m_TextureClass->Initialize(device, deviceContext, filename);
   if (!result) {
     return false;
   }
@@ -208,10 +209,10 @@ bool ModelWithTexture::LoadTexture(ID3D11Device* device,
 
 void ModelWithTexture::ReleaseTexture() {
   // Release the texture object.
-  if (m_Texture) {
-    m_Texture->Shutdown();
-    delete m_Texture;
-    m_Texture = 0;
+  if (m_TextureClass) {
+    m_TextureClass->Shutdown();
+    delete m_TextureClass;
+    m_TextureClass = 0;
   }
 
   return;

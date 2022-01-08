@@ -13,23 +13,60 @@ TextureClass::~TextureClass() {}
 bool TextureClass::Initialize(ID3D11Device* device,
                               ID3D11DeviceContext* deviceContext,
                               const char* filename) {
-  bool result;
-  int height, width;
-  D3D11_TEXTURE2D_DESC textureDesc;
   HRESULT hResult;
-  unsigned int rowPitch;
-  D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
-  ID3D11Resource* resource;
+  // ID3D11Resource* resource;
+  // hResult = CreateWICTextureFromFile(device, deviceContext, L"car.png",
+  //                                 &resource, &m_textureView);
 
-  hResult = CreateWICTextureFromFile(device, deviceContext, L"car.png",
-                                   &resource, &m_textureView);
+  uint32_t* pixels = new uint32_t[640 * 480];
+  uint8_t temp = 0;
+  for (unsigned int i = 0; i < 640 * 480; i++) {
+    temp = i % 255;
+    // RGBA
+    pixels[i] = temp + (temp << 8) + (temp << 16) + (0xFF << 24);
+  }
+
+  D3D11_SUBRESOURCE_DATA initData = {pixels, sizeof(uint32_t), 0};
+  D3D11_TEXTURE2D_DESC desc = {};
+  desc.Width = 640;
+  desc.Height = 480;
+  desc.MipLevels = 1;
+  desc.ArraySize = 1;
+  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  desc.SampleDesc.Count = 1;
+  desc.Usage = D3D11_USAGE_DEFAULT; // ** [If this is immutable. it cannot be updated]
+  desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+
+  hResult = device->CreateTexture2D(&desc, &initData, &m_texture);
+
+  if (SUCCEEDED(hResult)) {
+    D3D11_SHADER_RESOURCE_VIEW_DESC SRVDesc = {};
+    SRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    SRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    SRVDesc.Texture2D.MipLevels = 1;
+
+    hResult =
+        device->CreateShaderResourceView(m_texture, &SRVDesc, &m_textureView);
+  }
+
   if (FAILED(hResult)) {
     OutputDebugStringA("Load png failed\n");
     return false;
   }
 
-  
   return true;
+}
+
+void TextureClass::update(ID3D11DeviceContext* context) {
+  uint32_t* pixels = new uint32_t[640 * 480];
+  uint8_t temp = 0;
+  for (unsigned int i = 0; i < 640 * 480; i++) {
+    temp = i % 255;
+    // RGBA
+    pixels[i] = 0xFF + (0 << 8) + (temp << 16) + (0xFF << 24);
+  }
+
+  context->UpdateSubresource(m_texture, 0, nullptr, pixels, 0, 0);
 }
 
 void TextureClass::Shutdown() {

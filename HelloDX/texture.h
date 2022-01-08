@@ -6,6 +6,7 @@
 //////////////
 #include <d3d11.h>
 #include <stdio.h>
+
 #include "WICTextureLoader.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -28,6 +29,7 @@ class TextureClass {
 
   bool Initialize(ID3D11Device*, ID3D11DeviceContext*, const char*);
   void Shutdown();
+  void update(ID3D11DeviceContext*);
 
   ID3D11ShaderResourceView* GetTexture();
 
@@ -37,6 +39,7 @@ class TextureClass {
  private:
   unsigned char* m_targaData;
   ID3D11Texture2D* m_texture;
+
   ID3D11ShaderResourceView* m_textureView;
 };
 

@@ -540,42 +540,67 @@ HRESULT CreateWICTextureFromMemory(
     _Out_opt_ ID3D11Resource** texture,
     _Out_opt_ ID3D11ShaderResourceView** textureView, _In_ size_t maxsize) {
   if (!d3dDevice || !wicData || (!texture && !textureView)) {
+    OutputDebugStringA("Debug1\n");
     return E_INVALIDARG;
   }
 
   if (!wicDataSize) {
+    OutputDebugStringA("Debug2\n");
     return E_FAIL;
   }
 
 #ifdef _M_AMD64
-  if (wicDataSize > 0xFFFFFFFF) return HRESULT_FROM_WIN32(ERROR_FILE_TOO_LARGE);
+  if (wicDataSize > 0xFFFFFFFF) {
+    OutputDebugStringA("Debug3\n");
+    return HRESULT_FROM_WIN32(ERROR_FILE_TOO_LARGE);
+  }
 #endif
 
   IWICImagingFactory* pWIC = _GetWIC();
-  if (!pWIC) return E_NOINTERFACE;
+  if (!pWIC) {
+    OutputDebugStringA("Debug4\n");
+    return E_NOINTERFACE;
+  }
 
   // Create input stream for memory
   ScopedObject<IWICStream> stream;
   HRESULT hr = pWIC->CreateStream(&stream);
-  if (FAILED(hr)) return hr;
+  if (FAILED(hr)) {
+    OutputDebugStringA("Debug5\n");
+    return hr;
+  }
 
   hr = stream->InitializeFromMemory(const_cast<uint8_t*>(wicData),
                                     static_cast<DWORD>(wicDataSize));
-  if (FAILED(hr)) return hr;
+  if (FAILED(hr)) {
+    OutputDebugStringA("Debug6\n");
+    return hr;
+  }
 
   // Initialize WIC
   ScopedObject<IWICBitmapDecoder> decoder;
   hr = pWIC->CreateDecoderFromStream(stream.Get(), 0,
                                      WICDecodeMetadataCacheOnDemand, &decoder);
-  if (FAILED(hr)) return hr;
+  if (FAILED(hr)) {
+    OutputDebugStringA("Debug7\n");
+    return hr;
+  }
 
   ScopedObject<IWICBitmapFrameDecode> frame;
   hr = decoder->GetFrame(0, &frame);
-  if (FAILED(hr)) return hr;
+  if (FAILED(hr)) {
+    OutputDebugStringA("Debug8\n");
+    return hr;
+  }
 
   hr = CreateTextureFromWIC(d3dDevice, d3dContext, frame.Get(), texture,
                             textureView, maxsize);
-  if (FAILED(hr)) return hr;
+  if (FAILED(hr)) {
+    OutputDebugStringA("Debug9\n");
+    return hr;
+  }
+
+  OutputDebugStringA("Debug10\n");
 
   return hr;
 }
