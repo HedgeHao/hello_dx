@@ -126,6 +126,26 @@ class ModelPointCloud {
     const rs2::texture_coordinate *rsCoord = points.get_texture_coordinates();
     const int size = points.get_data_size();
 
+    float minU = 0, maxU = 1, minV = 0, maxV = 1; 
+   /* for (unsigned int i = 0; i < points.size(); i++) {
+      if (rsVertices[i].z) {
+         if (rsCoord[i].u > maxU) {
+          maxU = rsCoord[i].u;
+         } else if (rsCoord[i].u < minU) {
+           minU = rsCoord[i].u; 
+        }
+
+          if (rsCoord[i].v > maxV) {
+          maxV = rsCoord[i].v;
+        } else if (rsCoord[i].v < minV) {
+          minV = rsCoord[i].v;
+        }
+      }
+    }*/
+
+     float factorU = maxU - minU;
+    float factorV = maxV - minV;
+
     m_vertexCount = 0;
     for (unsigned int i = 0; i < points.size(); i++) {
       if (rsVertices[i].z) {
@@ -133,8 +153,8 @@ class ModelPointCloud {
         vertices[m_vertexCount - 1].position.x = rsVertices[i].x;
         vertices[m_vertexCount - 1].position.y = rsVertices[i].y * -1;
         vertices[m_vertexCount - 1].position.z = rsVertices[i].z - 0.5;
-        vertices[m_vertexCount - 1].texture.x = rsCoord[i].u;
-        vertices[m_vertexCount - 1].texture.y = rsCoord[i].v;
+        vertices[m_vertexCount - 1].texture.x = (rsCoord[i].u - minU)*factorU;
+        vertices[m_vertexCount - 1].texture.y = (rsCoord[i].v - minV)*factorV;
       }
     }
     d3dContext->UpdateSubresource(m_vertexBuffer, 0, nullptr, vertices, 0, 0);
@@ -142,7 +162,7 @@ class ModelPointCloud {
     m_indexCount = m_vertexCount;
     d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
 
-    m_TextureClass->update(d3dContext, color);
+    m_TextureClass->update(device, d3dContext, color);
   }
 
   void Render(ID3D11DeviceContext* deviceContext) {

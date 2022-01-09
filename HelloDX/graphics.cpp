@@ -246,11 +246,11 @@ bool GraphicsClass::Render() {
 
   /* [Use Texture Shader] */
   // Render the model using the texture shader.
-  /* m_ModelWithTexture->Render(m_Direct3D->GetDeviceContext());
-   result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(),
-                                    m_ModelWithTexture->GetIndexCount(),
-                                    worldMatrix, viewMatrix, projectionMatrix,
-                                    m_ModelWithTexture->GetTexture());*/
+ /* m_ModelWithTexture->Render(m_Direct3D->GetDeviceContext());
+  result = m_TextureShader->Render(m_Direct3D->GetDeviceContext(),
+                                   m_ModelWithTexture->GetIndexCount(),
+                                   worldMatrix, viewMatrix, projectionMatrix,
+                                   m_ModelWithTexture->GetTexture());*/
 
   // Present the rendered scene to the screen.
   m_Direct3D->EndScene();
