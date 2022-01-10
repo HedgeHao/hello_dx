@@ -168,6 +168,7 @@
     <ClInclude Include="modelTriangle.h" />
     <ClInclude Include="modelWithTexture.h" />
     <ClInclude Include="myShader.h" />
+    <ClInclude Include="realsense.hpp" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="sphere.h" />
     <ClInclude Include="system_class.h" />

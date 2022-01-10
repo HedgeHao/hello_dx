@@ -1,6 +1,7 @@
 #include "system_class.h"
 
 #include <stdio.h>
+#include <thread>
 
 
 char debugMsg[256];
@@ -9,6 +10,8 @@ void log() { OutputDebugStringA(debugMsg); }
 SystemClass::SystemClass() {
   m_Input = 0;
   m_Graphics = 0;
+
+  rs = new Rs();
 }
 
 SystemClass::SystemClass(const SystemClass &other) {}
@@ -55,12 +58,7 @@ bool SystemClass::Initialize() {
       std::make_shared<lips::LIPSBodyPose>(true, lips::LOG_CONSOLE, true);
 #endif
 
-#ifdef REALSENSE
-  //rs2::config cfg;
-  //cfg.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_RGB8, 30);
-  //cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
-  rsPipe.start();
-#endif
+    rs->startPipeline();
 
   return true;
 }
@@ -85,12 +83,27 @@ void SystemClass::Shutdown() {
   return;
 }
 
+static void captureFrame(Rs *rs, GraphicsClass *graphic) {
+    while (rs->running) {
+        rs->update();
+        if (rs->colorFrame.has_value()) {
+            graphic->m_modelPointsCloud->update(&rs->rsPoints, &rs->colorFrame.value());
+        }
+    }
+}
+
 void SystemClass::Run() {
   MSG msg;
   bool done, result;
 
   // Initialize the message structure.
   ZeroMemory(&msg, sizeof(MSG));
+
+
+  // Start realsense thread
+  rs->running = true;
+  std::thread t(captureFrame, rs, m_Graphics);
+  t.detach();
 
   // Loop until there is a quit message from the window or the user.
   done = false;
@@ -104,15 +117,18 @@ void SystemClass::Run() {
     // If windows signals to end the application then exit out.
     if (msg.message == WM_QUIT) {
       done = true;
+      rs->running = false;
     } else {
       // Otherwise do the frame processing.
       result = Frame();
       if (!result) {
         done = true;
+        rs->running = false;
       }
     }
   }
 
+  rs->running = false;
   return;
 }
 
@@ -133,17 +149,6 @@ bool SystemClass::Frame() {
     m_Graphics->m_modelSkeleton->update(skeleton);
   }
 #endif
-
-#ifdef REALSENSE
-  rs2::frameset frames = rsPipe.wait_for_frames();
-  rs2::video_frame colorFrame = frames.get_color_frame();
-  rs2::depth_frame depthFrame = frames.get_depth_frame();
-
-  rsPointCloud.map_to(colorFrame);
-  rsPoints = rsPointCloud.calculate(depthFrame);
-  m_Graphics->m_modelPointsCloud->update(rsPoints, &colorFrame);
-#endif
-
 
   // Do the frame processing for the graphics object.
   result = m_Graphics->Frame();

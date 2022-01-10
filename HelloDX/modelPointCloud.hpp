@@ -118,14 +118,14 @@ class ModelPointCloud {
     d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
   }
 
-  void update(rs2::points points, rs2::video_frame* color) {
+  void update(rs2::points *points, rs2::video_frame* color) {
   
-    const rs2::vertex* rsVertices = points.get_vertices();
-    const rs2::texture_coordinate *rsCoord = points.get_texture_coordinates();
-    const int size = points.get_data_size();
+    const rs2::vertex* rsVertices = points->get_vertices();
+    const rs2::texture_coordinate *rsCoord = points->get_texture_coordinates();
+    const int size = points->get_data_size();
 
     m_vertexCount = 0;
-    for (unsigned int i = 0; i < points.size(); i++) {
+    for (unsigned int i = 0; i < points->size(); i++) {
       if (rsVertices[i].z) {
         m_vertexCount++;
         vertices[m_vertexCount - 1].position.x = rsVertices[i].x;

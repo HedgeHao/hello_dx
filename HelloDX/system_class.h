@@ -16,8 +16,9 @@
 
 #include "LIPSBodyPose.h"
 #include "LIPSBodyPoseTypes.h"
+#include "realsense.hpp"
 
-#include <librealsense2/rs.hpp>
+
 
 class SystemClass {
 public:
@@ -44,11 +45,7 @@ private:
   GraphicsClass *m_Graphics;
   std::shared_ptr<lips::LIPSBodyPose> mPoseEngine;
 
-  #ifdef REALSENSE
-  rs2::pipeline rsPipe;
-  rs2::pointcloud rsPointCloud;
-  rs2::points rsPoints;
-  #endif
+  Rs* rs;
 };
 
 static LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
