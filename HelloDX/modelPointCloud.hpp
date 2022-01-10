@@ -12,8 +12,8 @@
 
 using namespace DirectX;
 
-#define WIDTH 640
-#define HEIGHT 480
+#define WIDTH 1280
+#define HEIGHT 720
 
 class ModelPointCloud {
  private:
@@ -103,11 +103,10 @@ class ModelPointCloud {
     return true;
   };
 
-  char d[100];
   void update(rs2::depth_frame frame) {
     m_vertexCount = 0;
-    for (int y = 0; y < 480; y++) {
-      for (int x = 0; x < 640; x++) {
+    for (int y = 0; y < HEIGHT; y++) {
+      for (int x = 0; x < WIDTH; x++) {
         vertices[m_vertexCount].position.x = x * 0.005;
         vertices[m_vertexCount].position.y = y * 0.005;
         vertices[m_vertexCount].position.z = frame.get_distance(x, y) * 0.5;
@@ -120,31 +119,10 @@ class ModelPointCloud {
   }
 
   void update(rs2::points points, rs2::video_frame* color) {
-    
-
+  
     const rs2::vertex* rsVertices = points.get_vertices();
     const rs2::texture_coordinate *rsCoord = points.get_texture_coordinates();
     const int size = points.get_data_size();
-
-    float minU = 0, maxU = 1, minV = 0, maxV = 1; 
-   /* for (unsigned int i = 0; i < points.size(); i++) {
-      if (rsVertices[i].z) {
-         if (rsCoord[i].u > maxU) {
-          maxU = rsCoord[i].u;
-         } else if (rsCoord[i].u < minU) {
-           minU = rsCoord[i].u; 
-        }
-
-          if (rsCoord[i].v > maxV) {
-          maxV = rsCoord[i].v;
-        } else if (rsCoord[i].v < minV) {
-          minV = rsCoord[i].v;
-        }
-      }
-    }*/
-
-     float factorU = maxU - minU;
-    float factorV = maxV - minV;
 
     m_vertexCount = 0;
     for (unsigned int i = 0; i < points.size(); i++) {
@@ -153,15 +131,12 @@ class ModelPointCloud {
         vertices[m_vertexCount - 1].position.x = rsVertices[i].x;
         vertices[m_vertexCount - 1].position.y = rsVertices[i].y * -1;
         vertices[m_vertexCount - 1].position.z = rsVertices[i].z - 0.5;
-        vertices[m_vertexCount - 1].texture.x = (rsCoord[i].u - minU)*factorU;
-        vertices[m_vertexCount - 1].texture.y = (rsCoord[i].v - minV)*factorV;
+        vertices[m_vertexCount - 1].texture.x = rsCoord[i].u;
+        vertices[m_vertexCount - 1].texture.y = rsCoord[i].v;
       }
     }
     d3dContext->UpdateSubresource(m_vertexBuffer, 0, nullptr, vertices, 0, 0);
-
     m_indexCount = m_vertexCount;
-    d3dContext->UpdateSubresource(m_indexBuffer, 0, nullptr, indices, 0, 0);
-
     m_TextureClass->update(device, d3dContext, color);
   }
 

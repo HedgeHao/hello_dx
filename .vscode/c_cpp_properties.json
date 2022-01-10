@@ -4,7 +4,8 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
-                "D:/bin/opencv/prebuilt/opencv/build/include"
+                "D:/bin/opencv/prebuilt/opencv/build/include",
+                "C:/Program Files (x86)/Intel RealSense SDK 2.0/include/"
             ],
             "defines": [
                 "_DEBUG",

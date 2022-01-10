@@ -56,10 +56,10 @@ bool SystemClass::Initialize() {
 #endif
 
 #ifdef REALSENSE
-  rs2::config cfg;
-  cfg.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_RGB8, 30);
-  cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
-  rsPipe.start(cfg);
+  //rs2::config cfg;
+  //cfg.enable_stream(RS2_STREAM_COLOR, 640, 480, RS2_FORMAT_RGB8, 30);
+  //cfg.enable_stream(RS2_STREAM_DEPTH, 640, 480);
+  rsPipe.start();
 #endif
 
   return true;

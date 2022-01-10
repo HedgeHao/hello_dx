@@ -18,9 +18,9 @@ bool TextureClass::Initialize(ID3D11Device* device,
                               ID3D11DeviceContext* deviceContext) {
   HRESULT hResult;
 
-  uint32_t* pixels = new uint32_t[640 * 480];
+  uint32_t* pixels = new uint32_t[WIDTH*HEIGHT];
   uint8_t temp = 0;
-  for (unsigned int i = 0; i < 640 * 480; i++) {
+  for (unsigned int i = 0; i < WIDTH * HEIGHT; i++) {
     temp = i % 255;
     // RGBA
     pixels[i] = temp + (temp << 8) + (temp << 16) + (0xFF << 24);
@@ -28,8 +28,8 @@ bool TextureClass::Initialize(ID3D11Device* device,
 
   D3D11_SUBRESOURCE_DATA initData = {pixels, sizeof(uint32_t), 0};
   D3D11_TEXTURE2D_DESC desc = {};
-  desc.Width = 640;
-  desc.Height = 480;
+  desc.Width = WIDTH;
+  desc.Height = HEIGHT;
   desc.MipLevels = 1;
   desc.ArraySize = 1;
   desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -64,7 +64,7 @@ bool TextureClass::Initialize(ID3D11Device* device,
 void TextureClass::update(ID3D11Device* device, ID3D11DeviceContext* context,
                           rs2::video_frame* color) {
   cv::Mat m =
-      cv::Mat(480, 640, CV_8UC3, (void*)color->get_data(), cv::Mat::AUTO_STEP);
+      cv::Mat(HEIGHT, WIDTH, CV_8UC3, (void*)color->get_data(), cv::Mat::AUTO_STEP);
   cv::cvtColor(m, m, cv::COLOR_BGR2RGB);
   std::vector<uchar> buf;
   cv::imencode(".png", m, buf);
